@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <bitset>
 #include "fort.hpp"
 
 // Function to get string input from user
@@ -24,16 +25,32 @@ int findBitLength(int x)
     return i;
 }
 
+// Function to generate binary input values
+std::vector<std::string> findInputStates(int x)
+{
+    std::vector<std::string> s{};
+    for (int i = 0; i < pow(2,x); i++)
+    {
+        s[i] = std::bitset<2>(i).to_string();
+        
+        std::cout << s[i] << "\n";
+    }
+    return s;
+}
+
 int main()
 {
     int stateCount{ };                              // to store the no. of states
+    int inputCount{ };
     std::vector<std::string> currentStateVector;    // vector to store current states 
     std::vector<std::string> nextStateVector;       // vector to store next states
     std::cout << "States start from S0 to S";
     std::cin >> stateCount;
     int bit_length{ findBitLength(stateCount) };
     std::cout << bit_length;
-
+    std::cout << "Enter the no. of inputs:";
+    std::cin >> inputCount;
+    std::vector<std::string> inputStates{ findInputStates(inputCount) };
     // resize vectors based on no. of states
     currentStateVector.resize(stateCount+1);      
     nextStateVector.resize(stateCount+1);
@@ -45,9 +62,13 @@ int main()
     // Loop to get all the state transitions
     for (int i = 0; i < stateCount; i++)
     {
-        std::cout << "Enter the next state " << i+1 << " :";
-        std::cin >> nextStateVector[i];
-        currentStateVector[i + 1] = nextStateVector[i];
+        for (int j = 0; j < inputCount; j++)
+        {
+            std::cout << "Enter the next state " << i + 1 << " :";
+            std::cin >> nextStateVector[i];
+            currentStateVector[i + 1] = nextStateVector[i];
+        }
+
     }
 
     nextStateVector[stateCount] = currentStateVector[0];
@@ -86,7 +107,6 @@ int main()
     {
         for (int j = 0; j < bit_length; j++)
         {
-
             if (currentStateVector[i][j] == '0' && nextStateVector[i][j] == '0')
             {
                 jkff_JVector[i][j] = '0';
@@ -204,7 +224,7 @@ int main()
     table << fort::endr;
     for (int i = 0; i < stateCount + 1; i++)
     {
-        table[i+1][0] = currentStateVector[i];
+        table[i + 1][0] = currentStateVector[i];
         table[i + 1][1] = nextStateVector[i];
         table[i + 1][2] = jkff_JVector[i];
         table[i + 1][3] = jkff_KVector[i];
